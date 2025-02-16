@@ -6,9 +6,15 @@ import sys
 CHUNK = 16384
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-RATE = CHUNK * 2
+if len(sys.argv) < 4:
+    RATE = CHUNK * 2 # send.py [filename] 0.5
+else:
+    RATE = CHUNK * int(sys.argv[3]) # Updated so that this is now a multiplyer!
 FFT_SIZE = 2**13
 BD = 255
+if len(sys.argv) < 2:
+    print("Usage: " + sys.argv[0] + " [record length] [filename output] [OPTIONAL:baud rate (bits per second)")
+    exit()
 RECORD_SECONDS = int(sys.argv[1])
 
 p = pyaudio.PyAudio()
@@ -20,7 +26,7 @@ stream = p.open(format=FORMAT,
                 frames_per_buffer=CHUNK)
 
 print("* recording")
-f = open("test.bin","wb")
+f = open(sys.argv[2],"wb")
 def convert_buffer(buf, max_items):
     buf = buf[:max_items*2]
     return struct.unpack("%dh" % max_items, buf)
@@ -42,7 +48,7 @@ def recognize_note(audio_data):
     signature = [peak for peak in fft_utils.find_peaks(final_fft,2) if peak[0]>10]
         
     if len(signature) == 0:
-        return
+        return 10 # Do not crash.
             
     note = min([x[0] for x in signature])
     return compute_freq(note)
@@ -66,6 +72,8 @@ for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
     print(eval1)
     evaluated = eval1
     print("post-evaluation")
+    if evaluated > 255:
+        evaluated = 255 # As I said, do not crash. Perhaps someday I'll get this to work with TCP/IP?
     #if evaluated > 199:
     #    evaluated -= 100
     #while not chr(evaluated) in alphabet:
