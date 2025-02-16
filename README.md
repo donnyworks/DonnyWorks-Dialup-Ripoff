@@ -13,7 +13,7 @@ How to use the "sender":
 
 How to use the "reciever":
 
-`recieve.py [seconds to listen for]`
+`recieve.py [seconds to listen for] [output file] [optional:baud rate (bytes per second)]`
 
 General:
 
