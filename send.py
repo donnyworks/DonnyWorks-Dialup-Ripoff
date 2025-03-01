@@ -5,7 +5,14 @@ import sys
 from scipy import signal
 p = pyaudio.PyAudio()
 stream = p.open(format=pyaudio.paFloat32, channels=1, rate=16000, output=1,)
-length = float(sys.argv[2])
+#length = float(sys.argv[2])
+if len(sys.argv) < 2:
+    print("Usage: " + sys.argv[0] + " [filename] [OPTIONAL: baud rate (default is two)]")
+    exit()
+if len(sys.argv) > 2:
+    length = 1/int(sys.argv[2])
+else:
+    length = 0.5
 f = open(sys.argv[1],"rb").read()
 
 def make_sinewave(frequency, length, sample_rate=44100):
